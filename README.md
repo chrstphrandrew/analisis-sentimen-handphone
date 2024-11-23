@@ -20,9 +20,9 @@ Aplikasi ini menggunakan **Streamlit** sebagai framework antarmuka visual.
 6. **Radar Chart Sentimen**: Distribusi sentimen dalam format radar chart untuk model tertentu.
 7. **Komentar Acak**: Menampilkan daftar komentar acak berdasarkan filter.
 
-## 🛠️ Instalasi
+## 🔧 Instalasi
 
 1. **Kloning repositori:**
    ```bash
-   git clone https://github.com/username/streamlit-sentiment-analysis.git
-   cd streamlit-sentiment-analysis
+   git clone https://github.com/chrstphrandrew/analisis-sentimen-handphone.git
+   cd analisis-sentimen-handphone
