@@ -313,5 +313,5 @@ if not data.empty:
                 st.write(random_comments[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
 
                 if compare_option and filtered_data_compare is not None:
-                    display_comparison_section("Komentar Acak", lambda data: st.write(data.sample(n=20)[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]), filtered_data_compare)
+                    display_comparison_section("Komentar Acak", lambda data: st.write(data.sample(n=200)[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]), filtered_data_compare)
 
