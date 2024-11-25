@@ -252,35 +252,36 @@ if not data.empty:
 
         # Tabs untuk Organisasi
         tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
-            "📈 Distribusi Sentimen", 
-            "☁️ Word Cloud", 
-            "🔥 Korelasi Sentimen", 
-            "🔤 Top Words", 
-            "📊 Panjang Komentar", 
+            "📈 Distribusi Sentimen",
+            "☁️ Word Cloud",
+            "🔥 Korelasi Sentimen",
+            "🔤 Top Words",
+            "📊 Panjang Komentar",
             "🛸 Radar Chart",
             "🎲 Komentar Acak"
         ])
+
+        def display_comparison_section(title, function, data_compare):
+            st.subheader(f"{title} - Perbandingan dengan {model_filter_compare}")
+            function(data_compare)
 
         with tab1:
             st.subheader("Distribusi Sentimen")
             plot_sentiment_distribution(filtered_data)
             if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Distribusi Sentimen - Perbandingan dengan {model_filter_compare}")
-                plot_sentiment_distribution(filtered_data_compare)
+                display_comparison_section("Distribusi Sentimen", plot_sentiment_distribution, filtered_data_compare)
 
         with tab2:
             st.subheader("Word Cloud")
             generate_wordcloud(filtered_data)
             if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Word Cloud - Perbandingan dengan {model_filter_compare}")
-                generate_wordcloud(filtered_data_compare)
+                display_comparison_section("Word Cloud", generate_wordcloud, filtered_data_compare)
 
         with tab3:
             st.subheader("Korelasi Sentimen Antar Model")
             plot_sentiment_correlation(filtered_data)
             if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Korelasi Sentimen - Perbandingan dengan {model_filter_compare}")
-                plot_sentiment_correlation(filtered_data_compare)
+                display_comparison_section("Korelasi Sentimen", plot_sentiment_correlation, filtered_data_compare)
 
         with tab4:
             st.subheader("Top Words Berdasarkan Sentimen dan Model")
@@ -295,26 +296,22 @@ if not data.empty:
             st.subheader("Distribusi Panjang Komentar Berdasarkan Sentimen")
             plot_comment_length_distribution(filtered_data)
             if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Distribusi Panjang Komentar - Perbxandingan dengan {model_filter_compare}")
-                plot_comment_length_distribution(filtered_data_compare)
+                display_comparison_section("Distribusi Panjang Komentar", plot_comment_length_distribution, filtered_data_compare)
 
         with tab6:
             st.subheader("Radar Chart Sentimen")
             plot_sentiment_radar_chart(filtered_data)
             if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Radar Chart - Perbandingan dengan {model_filter_compare}")
-                plot_sentiment_radar_chart(filtered_data_compare)
-        
+                display_comparison_section("Radar Chart", plot_sentiment_radar_chart, filtered_data_compare)
+
         with tab7:
             st.subheader("Komentar Acak")
-        if filtered_data.empty:
-            st.warning("Tidak ada komentar yang tersedia untuk filter yang dipilih.")
-        else:
-            # Ambil 20 komentar acak dari data yang sudah difilter
-            random_comments = filtered_data.sample(n=100)
-            st.write(random_comments[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
+            if filtered_data.empty:
+                st.warning("Tidak ada komentar yang tersedia untuk filter yang dipilih.")
+            else:
+                random_comments = filtered_data.sample(n=200)  # Ubah jumlah komentar sesuai kebutuhan
+                st.write(random_comments[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
 
-            if compare_option and filtered_data_compare is not None:
-                st.subheader(f"Komentar Acak - Perbandingan dengan {model_filter_compare}")
-                random_comments_compare = filtered_data_compare.sample(n=100)
-                st.write(random_comments_compare[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Komentar Acak", lambda data: st.write(data.sample(n=20)[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]), filtered_data_compare)
+
