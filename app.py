@@ -230,15 +230,20 @@ if not data.empty:
             model_filter_compare = st.sidebar.selectbox("Pilih Model Handphone untuk Perbandingan", list(all_models))
 
         # Filter Data Berdasarkan Pilihan
+        # Filter Data Berdasarkan Pilihan untuk Model Utama
         filtered_data = data.copy()
         if model_filter != "Semua":
             filtered_data = filtered_data[filtered_data["phoneModel"] == model_filter]
         if sentiment_filter != "Semua":
             filtered_data = filtered_data[filtered_data["PredictedSentiment"] == sentiment_filter]
 
+        # Filter Data Berdasarkan Pilihan untuk Model Pembanding
         filtered_data_compare = None
         if model_filter_compare:
             filtered_data_compare = data[data["phoneModel"] == model_filter_compare]
+            if sentiment_filter != "Semua":
+                filtered_data_compare = filtered_data_compare[filtered_data_compare["PredictedSentiment"] == sentiment_filter]
+
 
         # Generate narasi berdasarkan filter
         insights = generate_insights(filtered_data, sentiment_filter, model_filter, filtered_data_compare, model_filter_compare)
@@ -263,54 +268,80 @@ if not data.empty:
 
         def display_comparison_section(title, function, data_compare):
             st.subheader(f"{title} - Perbandingan dengan {model_filter_compare}")
-            function(data_compare)
+            if data_compare.empty:
+                st.warning(f"Tidak ada data untuk model {model_filter_compare} dengan filter sentimen '{sentiment_filter}'.")
+            else:
+                function(data_compare)
+
 
         with tab1:
             st.subheader("Distribusi Sentimen")
-            plot_sentiment_distribution(filtered_data)
-            if compare_option and filtered_data_compare is not None:
-                display_comparison_section("Distribusi Sentimen", plot_sentiment_distribution, filtered_data_compare)
+            if sentiment_filter != "Semua":
+                plot_sentiment_distribution(filtered_data)
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Distribusi Sentimen", plot_sentiment_distribution, filtered_data_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat distribusi sentimen.")
 
         with tab2:
             st.subheader("Word Cloud")
-            generate_wordcloud(filtered_data)
-            if compare_option and filtered_data_compare is not None:
-                display_comparison_section("Word Cloud", generate_wordcloud, filtered_data_compare)
+            if sentiment_filter != "Semua":
+                generate_wordcloud(filtered_data)
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Word Cloud", generate_wordcloud, filtered_data_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat word cloud.")
 
         with tab3:
             st.subheader("Korelasi Sentimen Antar Model")
-            plot_sentiment_correlation(filtered_data)
-            if compare_option and filtered_data_compare is not None:
-                display_comparison_section("Korelasi Sentimen", plot_sentiment_correlation, filtered_data_compare)
+            if sentiment_filter != "Semua":
+                plot_sentiment_correlation(filtered_data)
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Korelasi Sentimen", plot_sentiment_correlation, filtered_data_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat korelasi sentimen.")
 
         with tab4:
             st.subheader("Top Words Berdasarkan Sentimen dan Model")
-            if sentiment_filter == "Semua":
-                st.info("Silakan pilih sentimen terlebih dahulu di sidebar.")
-            else:
+            if sentiment_filter != "Semua":
                 plot_top_words(filtered_data, sentiment=sentiment_filter, model=model_filter if model_filter != "Semua" else None)
                 if compare_option and filtered_data_compare is not None:
                     plot_top_words(filtered_data_compare, sentiment=sentiment_filter, model=model_filter_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat top words.")
 
         with tab5:
             st.subheader("Distribusi Panjang Komentar Berdasarkan Sentimen")
-            plot_comment_length_distribution(filtered_data)
-            if compare_option and filtered_data_compare is not None:
-                display_comparison_section("Distribusi Panjang Komentar", plot_comment_length_distribution, filtered_data_compare)
+            if sentiment_filter != "Semua":
+                plot_comment_length_distribution(filtered_data)
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Distribusi Panjang Komentar", plot_comment_length_distribution, filtered_data_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat distribusi panjang komentar.")
 
         with tab6:
             st.subheader("Radar Chart Sentimen")
-            plot_sentiment_radar_chart(filtered_data)
-            if compare_option and filtered_data_compare is not None:
-                display_comparison_section("Radar Chart", plot_sentiment_radar_chart, filtered_data_compare)
+            if sentiment_filter != "Semua":
+                plot_sentiment_radar_chart(filtered_data)
+                if compare_option and filtered_data_compare is not None:
+                    display_comparison_section("Radar Chart", plot_sentiment_radar_chart, filtered_data_compare)
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat radar chart.")
 
         with tab7:
             st.subheader("Komentar Acak")
-            if filtered_data.empty:
-                st.warning("Tidak ada komentar yang tersedia untuk filter yang dipilih.")
-            else:
-                random_comments = filtered_data.sample(n=200)  # Ubah jumlah komentar sesuai kebutuhan
-                st.write(random_comments[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
+            if sentiment_filter != "Semua":
+                if filtered_data.empty:
+                    st.warning("Tidak ada komentar yang tersedia untuk filter yang dipilih.")
+                else:
+                    random_comments = filtered_data.sample(n=min(200, len(filtered_data)))  # Ubah jumlah komentar sesuai kebutuhan
+                    st.write(random_comments[["phoneModel", "PredictedSentiment", "cleaned_text_2"]])
 
-                if compare_option and filtered_data_compare is not None:
-                    display_comparison_section("Komentar Acak", lambda data: st.write(data.sample(n=200)[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]), filtered_data_compare)
+                    if compare_option and filtered_data_compare is not None:
+                        display_comparison_section(
+                            "Komentar Acak",
+                            lambda data: st.write(data.sample(n=min(200, len(data)))[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]),
+                            filtered_data_compare
+                        )
+            else:
+                st.info("Silakan pilih sentimen terlebih dahulu di sidebar untuk melihat komentar acak.")
