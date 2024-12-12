@@ -183,10 +183,10 @@ def search_comments_with_filter(data, keyword, model_filter):
 st.set_page_config(page_title="Analisis Sentimen YouTube", layout="wide", initial_sidebar_state="expanded")
 
 # Halaman Utama
-st.title("📊 Analisis Sentimen Komentar YouTube")
+st.title("📊 Analisis Sentimen Komentar Pengguna YouTube Terhadap Handphone di Indonesia")
 st.markdown(
     """
-    Selamat datang di aplikasi analisis sentimen komentar YouTube! 
+    Selamat datang di aplikasi analisis sentimen handphone ini! 
     Jelajahi berbagai model handphone dengan sentimen komentar pengguna, 
     distribusi kata, dan korelasi antar model.
     """
@@ -314,4 +314,3 @@ if not data.empty:
 
                 if compare_option and filtered_data_compare is not None:
                     display_comparison_section("Komentar Acak", lambda data: st.write(data.sample(n=200)[["phoneModel", "PredictedSentiment", "cleaned_text_2"]]), filtered_data_compare)
-
