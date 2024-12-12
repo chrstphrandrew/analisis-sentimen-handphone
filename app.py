@@ -50,20 +50,32 @@ def generate_wordcloud(data):
     ax.axis("off")
     st.pyplot(fig)
 
-def plot_top_words(data, sentiment, model=None, top_n=10):
+def plot_top_words(data, sentiment=None, model=None, top_n=10):
     if data.empty:
         st.warning("Data kosong untuk filter ini.")
         return
+
+    # Menggabungkan semua teks dari kolom 'cleaned_text_2'
     text = " ".join(data["cleaned_text_2"].dropna())
+
+    # Membuat frekuensi kata
     word_freq = pd.Series(text.split()).value_counts().head(top_n)
+
+    # Membuat plot
     fig, ax = plt.subplots(figsize=(8, 5))
     sns.barplot(x=word_freq.values, y=word_freq.index, palette="viridis", ax=ax)
-    title = f"Top {top_n} Words untuk Sentimen: {sentiment.capitalize()}"
-    if model:
-        title += f" (Model: {model})"
+
+    # Menentukan judul grafis berdasarkan filter sentimen dan model
+    sentiment_label = sentiment.capitalize() if sentiment else "Semua Sentimen"
+    model_label = f" (Model: {model})" if model else ""
+    title = f"Top {top_n} Words untuk Sentimen: {sentiment_label}{model_label}"
+
+    # Mengatur judul dan label pada plot
     ax.set_title(title, fontsize=14)
     ax.set_xlabel("Frekuensi", fontsize=12)
     ax.set_ylabel("Kata", fontsize=12)
+
+    # Menampilkan plot di Streamlit
     st.pyplot(fig)
 
 def plot_sentiment_correlation(data):
